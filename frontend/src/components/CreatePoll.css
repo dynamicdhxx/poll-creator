@@ -1,0 +1,294 @@
+.create-poll {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.create-poll-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.create-icon {
+  display: none;
+}
+
+.create-poll-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.create-description {
+  color: var(--text-secondary);
+}
+
+/* Templates */
+.templates-section {
+  margin-bottom: 1.5rem;
+}
+
+.templates-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.template-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 0.5rem;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75rem;
+}
+
+.template-card:hover {
+  border-color: var(--accent);
+}
+
+.template-icon {
+  font-size: 1.25rem;
+}
+
+.template-name {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.templates-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.templates-divider::before,
+.templates-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-color);
+}
+
+.selected-template-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #e0e7ff;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+
+.clear-template {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Form */
+.poll-form {
+  background: white;
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  color: var(--error);
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.input-large {
+  font-size: 1rem;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.input-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* Options */
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-number {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.option-row .input {
+  flex: 1;
+}
+
+.remove-btn {
+  padding: 0.5rem;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.remove-btn:hover:not(:disabled) {
+  color: var(--error);
+}
+
+.remove-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.add-option-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.plus {
+  font-size: 1.25rem;
+  font-weight: 300;
+}
+
+/* Settings */
+.poll-settings {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.setting-row {
+  margin-bottom: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--accent);
+}
+
+.checkbox-custom {
+  display: none;
+}
+
+.checkbox-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkbox-text {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.checkbox-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.input-date {
+  max-width: 200px;
+}
+
+.input-date::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+.input-date::-webkit-datetime-edit {
+  padding: 0;
+}
+
+.input-date::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
+}
+
+/* Submit */
+.btn-submit {
+  width: 100%;
+  padding: 1rem;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 480px) {
+  .templates-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
