@@ -253,7 +253,9 @@ function CreatePoll() {
               value={expiresAt}
               onChange={(e) => setExpiresAt(e.target.value)}
               min={new Date().toISOString().slice(0, 10)}
+              placeholder="Select date"
             />
+            <span className="input-hint">Tap to select when this poll should close</span>
           </div>
         </div>
 
