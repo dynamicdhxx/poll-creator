@@ -88,7 +88,7 @@ const generateOptionId = () => `opt_${uuidv4().slice(0, 8)}`;
 const generateUserId = () => `user_${uuidv4().slice(0, 12)}`;
 
 const getClientIdentifier = (req) => {
-  const visitorId = req.headers['x-visitor-id'];
+  const visitorId = req.body?.visitorId || req.query?.visitorId || req.headers['x-visitor-id'];
   if (visitorId) {
     return visitorId;
   }

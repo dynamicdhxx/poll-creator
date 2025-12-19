@@ -23,8 +23,6 @@ const markVotedLocally = (pollId) => {
   localStorage.setItem('voted_polls', JSON.stringify(votedPolls))
 }
 
-axios.defaults.headers.common['X-Visitor-Id'] = getVisitorId()
-
 function ViewPoll() {
   const { id } = useParams()
   const [poll, setPoll] = useState(null)
@@ -93,7 +91,8 @@ function ViewPoll() {
 
   const fetchPoll = async () => {
     try {
-      const response = await axios.get(`/api/polls/${id}`)
+      const visitorId = getVisitorId()
+      const response = await axios.get(`/api/polls/${id}?visitorId=${visitorId}`)
       const localVoted = hasVotedLocally(id)
       setPoll({
         ...response.data,
@@ -142,12 +141,14 @@ function ViewPoll() {
 
     try {
       const shouldSendNickname = poll.requireAuth || !voteAnonymously
+      const visitorId = getVisitorId()
       
       const response = await axios.post(`/api/polls/${id}/vote`, {
         optionId: selectedOptions[0],
         optionIds: poll.allowMultiple ? selectedOptions : undefined,
         anonymous: poll.requireAuth ? false : voteAnonymously,
-        nickname: shouldSendNickname ? nickname.trim() : undefined
+        nickname: shouldSendNickname ? nickname.trim() : undefined,
+        visitorId
       })
 
       markVotedLocally(id)
