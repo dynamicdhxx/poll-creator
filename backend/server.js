@@ -88,11 +88,18 @@ const generateOptionId = () => `opt_${uuidv4().slice(0, 8)}`;
 const generateUserId = () => `user_${uuidv4().slice(0, 12)}`;
 
 const getClientIdentifier = (req) => {
-  const visitorId = req.body?.visitorId || req.query?.visitorId || req.headers['x-visitor-id'];
+  const bodyId = req.body?.visitorId;
+  const queryId = req.query?.visitorId;
+  const headerId = req.headers['x-visitor-id'];
+  const visitorId = bodyId || queryId || headerId;
+  
+  console.log(`getClientIdentifier - body: ${bodyId}, query: ${queryId}, header: ${headerId}, using: ${visitorId || 'IP fallback'}`);
+  
   if (visitorId) {
     return visitorId;
   }
   const ip = req.ip || req.connection.remoteAddress || 'unknown';
+  console.log(`Falling back to IP: ${ip}`);
   return ip;
 };
 
@@ -330,7 +337,7 @@ app.get('/api/polls/:id', (req, res) => {
 app.post('/api/polls/:id/vote', (req, res) => {
   try {
     const { id } = req.params;
-    const { optionId, optionIds, anonymous = true, nickname, userId } = req.body;
+    const { optionId, optionIds, anonymous = true, nickname, userId, visitorId } = req.body;
     
     const poll = polls.get(id);
 
@@ -352,7 +359,10 @@ app.post('/api/polls/:id/vote', (req, res) => {
     }
 
     const clientId = getClientIdentifier(req);
+    console.log(`Vote attempt - visitorId from body: ${visitorId}, clientId used: ${clientId}, existing voters: ${Array.from(poll.voters.keys()).join(', ')}`);
+    
     if (poll.voters.has(clientId)) {
+      console.log(`Duplicate vote blocked for clientId: ${clientId}`);
       return res.status(400).json({ error: 'You have already voted on this poll' });
     }
 
