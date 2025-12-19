@@ -66,7 +66,6 @@ function CreatePoll() {
     e.preventDefault()
     setError('')
 
-    // Validation
     if (!question.trim()) {
       setError('Please enter a question')
       return
@@ -109,7 +108,6 @@ function CreatePoll() {
         </p>
       </div>
 
-      {/* Templates Section */}
       {showTemplates && templates.length > 0 && (
         <div className="templates-section">
           <h3 className="templates-title">
@@ -133,7 +131,6 @@ function CreatePoll() {
         </div>
       )}
 
-      {/* Selected Template Badge */}
       {selectedTemplate && (
         <div className="selected-template-badge">
           <span className="template-icon">{selectedTemplate.icon}</span>

@@ -8,7 +8,7 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const server = createServer(app);
 const wss = new WebSocketServer({ server });
-const pollSubscriptions = new Map(); 
+const pollSubscriptions = new Map();
 
 app.use(cors());
 app.use(express.json());
@@ -16,7 +16,6 @@ app.use(express.json());
 const polls = new Map();
 const users = new Map();
 
-// Poll Templates
 const pollTemplates = [
   {
     id: 'team-lunch',
@@ -89,11 +88,13 @@ const generateOptionId = () => `opt_${uuidv4().slice(0, 8)}`;
 const generateUserId = () => `user_${uuidv4().slice(0, 12)}`;
 
 const getClientIdentifier = (req) => {
+  const visitorId = req.headers['x-visitor-id'];
+  if (visitorId) {
+    return visitorId;
+  }
   const ip = req.ip || req.connection.remoteAddress || 'unknown';
-  const userAgent = req.headers['user-agent'] || 'unknown';
-  return `${ip}_${userAgent.slice(0, 50)}`;
+  return ip;
 };
-
 
 const calculatePercentages = (poll) => {
   return poll.options.map(option => ({
@@ -138,14 +139,12 @@ wss.on('connection', (ws) => {
       const message = JSON.parse(data);
       
       if (message.type === 'subscribe' && message.pollId) {
-        // Subscribe to poll updates
         if (!pollSubscriptions.has(message.pollId)) {
           pollSubscriptions.set(message.pollId, new Set());
         }
         pollSubscriptions.get(message.pollId).add(ws);
         ws.pollId = message.pollId;
         
-        // Send current poll state
         const poll = polls.get(message.pollId);
         if (poll) {
           ws.send(JSON.stringify({
@@ -176,7 +175,6 @@ wss.on('connection', (ws) => {
   });
 });
 
-// GET POLL TEMPLATES
 app.get('/api/templates', (req, res) => {
   const { category } = req.query;
   let templates = pollTemplates;
@@ -188,7 +186,6 @@ app.get('/api/templates', (req, res) => {
   res.json(templates);
 });
 
-// CREATE USER (Simple Auth)
 app.post('/api/users', (req, res) => {
   const { nickname } = req.body;
   
@@ -207,7 +204,6 @@ app.post('/api/users', (req, res) => {
   res.status(201).json(user);
 });
 
-// GET USER
 app.get('/api/users/:id', (req, res) => {
   const user = users.get(req.params.id);
   if (!user) {
@@ -216,8 +212,6 @@ app.get('/api/users/:id', (req, res) => {
   res.json(user);
 });
 
-// CREATE POLL
-// POST /api/polls
 app.post('/api/polls', (req, res) => {
   try {
     const { 
@@ -234,7 +228,6 @@ app.post('/api/polls', (req, res) => {
     let pollQuestion = question;
     let pollOptions = options;
 
-    // If using template
     if (templateId) {
       const template = pollTemplates.find(t => t.id === templateId);
       if (template) {
@@ -243,7 +236,6 @@ app.post('/api/polls', (req, res) => {
       }
     }
 
-    // Validation
     if (!pollQuestion || !pollQuestion.trim()) {
       return res.status(400).json({ error: 'Question is required' });
     }
@@ -267,7 +259,7 @@ app.post('/api/polls', (req, res) => {
       allowMultiple: Boolean(allowMultiple),
       requireAuth: Boolean(requireAuth),
       totalVotes: 0,
-      voters: new Map(), // Store voter info: clientId -> { anonymous: bool, nickname: string, votedAt: date }
+      voters: new Map(),
       status: 'active',
       createdAt,
       expiresAt: expiresAt || null,
@@ -279,7 +271,6 @@ app.post('/api/polls', (req, res) => {
 
     polls.set(pollId, poll);
 
-    // Return poll without voters map
     const response = {
       ...poll,
       voters: undefined,
@@ -294,8 +285,6 @@ app.post('/api/polls', (req, res) => {
   }
 });
 
-// GET POLL
-// GET /api/polls/:id
 app.get('/api/polls/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -313,7 +302,6 @@ app.get('/api/polls/:id', (req, res) => {
     const voterInfo = poll.voters.get(clientId);
     const hasVoted = Boolean(voterInfo);
 
-    // Get recent voters (for display)
     const recentVoters = Array.from(poll.voters.values())
       .filter(v => !v.anonymous && v.nickname)
       .slice(-5)
@@ -339,8 +327,6 @@ app.get('/api/polls/:id', (req, res) => {
   }
 });
 
-// SUBMIT VOTE
-// POST /api/polls/:id/vote
 app.post('/api/polls/:id/vote', (req, res) => {
   try {
     const { id } = req.params;
@@ -425,8 +411,6 @@ app.post('/api/polls/:id/vote', (req, res) => {
   }
 });
 
-// CLOSE POLL
-// POST /api/polls/:id/close
 app.post('/api/polls/:id/close', (req, res) => {
   try {
     const { id } = req.params;
@@ -457,7 +441,6 @@ app.post('/api/polls/:id/close', (req, res) => {
   }
 });
 
-// GET ALL POLLS (bonus endpoint for listing)
 app.get('/api/polls', (req, res) => {
   try {
     const allPolls = Array.from(polls.values()).map(poll => ({
@@ -479,7 +462,6 @@ app.get('/api/polls', (req, res) => {
   }
 });
 
-// GET EMBED PAGE
 app.get('/embed/:id', (req, res) => {
   const { id } = req.params;
   const poll = polls.get(id);
@@ -608,7 +590,6 @@ app.get('/embed/:id', (req, res) => {
   res.send(html);
 });
 
-// Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });

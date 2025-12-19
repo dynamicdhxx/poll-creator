@@ -22,7 +22,6 @@
   color: var(--text-secondary);
 }
 
-/* Templates */
 .templates-section {
   margin-bottom: 1.5rem;
 }
@@ -104,7 +103,6 @@
   padding: 0;
 }
 
-/* Form */
 .poll-form {
   background: white;
 }
@@ -141,7 +139,6 @@
   margin-top: 0.25rem;
 }
 
-/* Options */
 .options-list {
   display: flex;
   flex-direction: column;
@@ -200,7 +197,6 @@
   font-weight: 300;
 }
 
-/* Settings */
 .poll-settings {
   border-top: 1px solid var(--border-color);
   padding-top: 1.5rem;
@@ -268,7 +264,6 @@
   padding: 0;
 }
 
-/* Submit */
 .btn-submit {
   width: 100%;
   padding: 1rem;

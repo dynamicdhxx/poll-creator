@@ -3,6 +3,28 @@ import { useParams, Link } from 'react-router-dom'
 import axios from 'axios'
 import './ViewPoll.css'
 
+const getVisitorId = () => {
+  let visitorId = localStorage.getItem('poll_visitor_id')
+  if (!visitorId) {
+    visitorId = 'v_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36)
+    localStorage.setItem('poll_visitor_id', visitorId)
+  }
+  return visitorId
+}
+
+const hasVotedLocally = (pollId) => {
+  const votedPolls = JSON.parse(localStorage.getItem('voted_polls') || '{}')
+  return !!votedPolls[pollId]
+}
+
+const markVotedLocally = (pollId) => {
+  const votedPolls = JSON.parse(localStorage.getItem('voted_polls') || '{}')
+  votedPolls[pollId] = Date.now()
+  localStorage.setItem('voted_polls', JSON.stringify(votedPolls))
+}
+
+axios.defaults.headers.common['X-Visitor-Id'] = getVisitorId()
+
 function ViewPoll() {
   const { id } = useParams()
   const [poll, setPoll] = useState(null)
@@ -72,8 +94,12 @@ function ViewPoll() {
   const fetchPoll = async () => {
     try {
       const response = await axios.get(`/api/polls/${id}`)
-      setPoll(response.data)
-      if (response.data.hasVoted || response.data.status === 'closed') {
+      const localVoted = hasVotedLocally(id)
+      setPoll({
+        ...response.data,
+        hasVoted: response.data.hasVoted || localVoted
+      })
+      if (response.data.hasVoted || localVoted || response.data.status === 'closed') {
         setShowResults(true)
       }
     } catch (err) {
@@ -115,8 +141,6 @@ function ViewPoll() {
     setShowAuthModal(false)
 
     try {
-      // When requireAuth is true, always send nickname
-      // When requireAuth is false, only send nickname if not anonymous
       const shouldSendNickname = poll.requireAuth || !voteAnonymously
       
       const response = await axios.post(`/api/polls/${id}/vote`, {
@@ -126,7 +150,8 @@ function ViewPoll() {
         nickname: shouldSendNickname ? nickname.trim() : undefined
       })
 
-      setPoll(response.data.poll)
+      markVotedLocally(id)
+      setPoll({ ...response.data.poll, hasVoted: true })
       setShowResults(true)
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to submit vote')
@@ -185,7 +210,6 @@ function ViewPoll() {
   return (
     <div className="view-poll animate-fadeIn">
       <div className="poll-card card card-glow">
-        {/* Poll Status Badge */}
         <div className="status-badges">
           {poll.status === 'closed' && (
             <div className="status-badge status-closed">
@@ -206,10 +230,8 @@ function ViewPoll() {
           )}
         </div>
 
-        {/* Question */}
         <h1 className="poll-question">{poll.question}</h1>
 
-        {/* Creator and Vote Count */}
         <div className="poll-meta">
           <div className="vote-count">
             <span className="vote-number">{poll.totalVotes}</span>
@@ -222,7 +244,6 @@ function ViewPoll() {
           )}
         </div>
 
-        {/* Recent Voters */}
         {poll.recentVoters && poll.recentVoters.length > 0 && (
           <div className="recent-voters">
             <span className="voters-label">Recent voters:</span>
@@ -238,7 +259,6 @@ function ViewPoll() {
           </div>
         )}
 
-        {/* Options */}
         <div className="options-container">
           {poll.options.map((option, index) => (
             <div
@@ -288,7 +308,6 @@ function ViewPoll() {
           ))}
         </div>
 
-        {/* Vote Button */}
         {!showResults && poll.status === 'active' && (
           <button
             className="btn btn-primary btn-vote"
@@ -309,7 +328,6 @@ function ViewPoll() {
           </button>
         )}
 
-        {/* Anonymous Toggle (before voting) */}
         {!poll.hasVoted && poll.status === 'active' && !poll.requireAuth && (
           <div className="anonymous-toggle">
             <label className="toggle-label">
@@ -334,7 +352,6 @@ function ViewPoll() {
           </div>
         )}
 
-        {/* View Results Toggle (before voting) */}
         {!poll.hasVoted && poll.status === 'active' && (
           <button
             className="btn btn-ghost btn-toggle-results"
@@ -344,7 +361,6 @@ function ViewPoll() {
           </button>
         )}
 
-        {/* Share Section */}
         <div className="share-section">
           <div className="share-label">Share this poll</div>
           <div className="share-row">
@@ -372,7 +388,6 @@ function ViewPoll() {
             </button>
           </div>
           
-          {/* Embed Button */}
           <button
             className="btn btn-ghost btn-embed"
             onClick={() => setShowEmbedModal(true)}
@@ -382,7 +397,6 @@ function ViewPoll() {
           </button>
         </div>
 
-        {/* Admin Actions */}
         {poll.status === 'active' && (
           <div className="admin-actions">
             <button
@@ -395,7 +409,6 @@ function ViewPoll() {
         )}
       </div>
 
-      {/* Create New Poll CTA */}
       <div className="create-cta animate-slideUp" style={{ animationDelay: '0.2s' }}>
         <Link to="/create" className="btn btn-secondary">
           <span>+</span>
@@ -403,7 +416,6 @@ function ViewPoll() {
         </Link>
       </div>
 
-      {/* Auth Modal */}
       {showAuthModal && (
         <div className="modal-overlay" onClick={() => setShowAuthModal(false)}>
           <div className="modal" onClick={e => e.stopPropagation()}>
@@ -433,7 +445,6 @@ function ViewPoll() {
         </div>
       )}
 
-      {/* Embed Modal */}
       {showEmbedModal && (
         <div className="modal-overlay" onClick={() => setShowEmbedModal(false)}>
           <div className="modal modal-embed" onClick={e => e.stopPropagation()}>

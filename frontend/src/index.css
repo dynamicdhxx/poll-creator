@@ -45,7 +45,6 @@ body {
   width: 100%;
 }
 
-/* Footer */
 .footer {
   text-align: center;
   padding: 1.5rem 1rem;
@@ -65,7 +64,6 @@ body {
   font-weight: 500;
 }
 
-/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -114,7 +112,6 @@ body {
   background: var(--bg-secondary);
 }
 
-/* Cards */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
@@ -122,7 +119,6 @@ body {
   padding: 1.5rem;
 }
 
-/* Inputs */
 .input {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -153,12 +149,10 @@ body {
   color: var(--text-primary);
 }
 
-/* Text */
 .text-gradient {
   color: var(--accent);
 }
 
-/* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
